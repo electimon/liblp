@@ -81,12 +81,17 @@ class ImageExtractor:
 
 					remaining_bytes -= block_size
 
+	def DumpMetadata(self, metadata):
+		with (self.output_dir / 'super_partition_size.txt').open('w') as fd:
+			fd.write(str(metadata.block_devices[0].size))
+
 def lpunpack(image: Path, output: Path = Path('.'),
              partitions: List[str] = None, slot: int = 0):
 	with image.open('rb') as image_fd:
 		metadata = ReadMetadata(image, slot)
 
 		extractor = ImageExtractor(image_fd, metadata, partitions, output)
+		extractor.DumpMetadata(metadata)
 		extractor.Extract()
 
 def main():
